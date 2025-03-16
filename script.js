@@ -1,15 +1,12 @@
-// Defining a baseURL and key to as part of the request URL
-
 const baseURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
 let city = prompt('Enter your current city');
 city = city.toLowerCase();
 const tempURL = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=us&include=current&key=TWDWQU5ZRGQBQ3N8SFA8FW445&contentType=json`;
-// Grab references to all the DOM elements you'll need to manipulate
+// Select various HTML elements from index.html for reference
 const searchTerm = document.querySelector('.search');
 const search = document.querySelector('#search');
 const startDate = document.querySelector('.start-date');
 const endDate = document.querySelector('.end-date');
-const searchForm = document.querySelector('form');
 const nextBtn = document.querySelector('.next');
 const previousBtn = document.querySelector('.prev');
 const section = document.querySelector('section');
@@ -21,6 +18,8 @@ search.focus();
 nav.style.display = 'none';
 let pageNumber = 0;
 const key = "XXvKI1OVDzoAojy31mEXel8z5N7rXj4e";
+
+const searchForm = document.querySelector('form');
 searchForm.addEventListener("submit",submitSearch);   
 
 function submitSearch(e){
@@ -38,6 +37,7 @@ async function fetchTemperature() {
     }
 }
 
+// Fetch results according to page number,on pressing the next and previous buttons
 function fetchResults(e){
     e.preventDefault();
     loader.style.display = "block";
@@ -82,6 +82,7 @@ function displayTemp(data) {
 setInterval(fetchTemperature,60000);
 fetchTemperature();
 
+//Display the json data retreived in a good manner
 function displayResults(json){
     while(section.firstChild){
         section.removeChild(section.firstChild);
@@ -138,7 +139,6 @@ function displayResults(json){
             article.appendChild(para1);
             sp.appendChild(link2);
             article.appendChild(sp);
-            // article.appendChild(keywordPara);
             section.appendChild(article);
 
         }
@@ -147,12 +147,13 @@ function displayResults(json){
 }
 nextBtn.addEventListener("click",nextPage);
 previousBtn.addEventListener("click",previousPage);
+// Going to the next page
 function nextPage(e){
     pageNumber++;
     fetchResults(e);
 
 }
-
+// Going to previous page
 function previousPage(e){
     if(pageNumber>0)pageNumber--;
     else{return;}
