@@ -1,7 +1,6 @@
 const baseURL = 'https://api.nytimes.com/svc/search/v2/articlesearch.json';
-let city = prompt('Enter your current city');
-city = city.toLowerCase();
-const tempURL = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=us&include=current&key=TWDWQU5ZRGQBQ3N8SFA8FW445&contentType=json`;
+let city;
+let tempURL;
 // Select various HTML elements from index.html for reference
 const searchTerm = document.querySelector('.search');
 const search = document.querySelector('#search');
@@ -42,12 +41,16 @@ function fetchResults(e){
     e.preventDefault();
     loader.style.display = "block";
     let url = `${baseURL}?api-key=${key}&page=${pageNumber}&q=${searchTerm.value}`;
-    if(startDate.value!==""){
-        url = `${url}&begin_date=${startDate.value}`;
-
+    if(startDate.value !== ""){
+        // Remove hyphens from the date string
+        const formattedStartDate = startDate.value.replace(/-/g, '');
+        url = `${url}&begin_date=${formattedStartDate}`;
     }
-    if(endDate.value!==""){
-        url = `${url}&end_date=${endDate.value}`;
+    
+    if(endDate.value !== ""){
+        // Remove hyphens from the date string
+        const formattedEndDate = endDate.value.replace(/-/g, '');
+        url = `${url}&end_date=${formattedEndDate}`;
     }
     if(sort!==""){
         url = `${url}&sort=${sort.value}`;
@@ -125,8 +128,11 @@ function displayResults(json){
 
             }   
             para1.style.fontSize = "50";
-            if(current.multimedia.length > 0){
-                img.src = `https://www.nytimes.com/${current.multimedia[0].url}`;
+            if(current.multimedia){
+                img.src = `${current.multimedia.thumbnail.url}`;
+                console.log("img is ",current.multimedia.default.url);
+                img.style.width = "50%";
+                img.style.height = "50%";
                 img.alt = current.headline.main;
             }
             date.style.color="black";
@@ -159,3 +165,17 @@ function previousPage(e){
     else{return;}
     fetchResults(e);
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    const cityModal = document.getElementById('cityModal');
+    const cityForm = document.getElementById('cityForm');
+    const cityInput = document.getElementById('cityInput');
+
+    cityForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        city = cityInput.value.toLowerCase();
+        cityModal.style.display = "none";
+        tempURL = `https://weather.visualcrossing.com/VisualCrossingWebServices/rest/services/timeline/${city}?unitGroup=us&include=current&key=TWDWQU5ZRGQBQ3N8SFA8FW445&contentType=json`;
+        fetchTemperature();
+    });
+});
